@@ -1,50 +1,85 @@
+Class adapter
 #include <iostream>
 using namespace std;
-// Adaptee Interface
-class Adaptee
+
+class Duck
 {
 public:
-    virtual void print(string str) = 0;
+    virtual void quack() = 0;
+    virtual void fly() = 0;
 };
 
-// Adaptee Implementation
-class idkwtn : public Adaptee
+class MallardDuck : public Duck
 {
 public:
-    void print(string str) override
+    void quack() override
     {
-        cout << "Open the door " << str << endl;
+        cout << "Quack\n";
+    }
+
+    void fly() override
+    {
+        cout << "I'm flying\n";
     }
 };
 
-// Target Interface
-class Client
+class Turkey
 {
 public:
-    virtual void print(string str) = 0;
+    virtual void gobble() = 0;
+    virtual void fly() = 0;
 };
 
-// Adapter Implementation
-class Adapter : public Client
+class WildTurkey : public Turkey
 {
-private:
-    Adaptee* printer;
-
 public:
-    Adapter(Adaptee* adaptee) : printer(adaptee) {}
-
-    void print(string str) override
+    void gobble() override
     {
-        printer->print(str);
+        cout << "Gobble gobble\n";
+    }
+
+    void fly() override
+    {
+        cout << "I'm flying a short distance\n";
     }
 };
 
-// Client Code
+class TurkeyAdapter : public Duck, public WildTurkey
+{
+public:
+    void quack() override
+    {
+        gobble();
+    }
+
+    void fly() override
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            WildTurkey::fly();
+        }
+    }
+};
+
 int main()
 {
-    Adaptee* adaptee = new idkwtn();
-    Client* newPrinter = new Adapter(adaptee);
+    MallardDuck *duck = new MallardDuck();
+    WildTurkey *turkey = new WildTurkey();
+    Duck *turkeyAdapter = new TurkeyAdapter();
 
-    newPrinter->print("please");
+    cout << "The Turkey says...\n";
+    turkey->gobble();
+    turkey->fly();
+    cout << "\nThe Duck says...\n";
+    duck->quack();
+    duck->fly();
+    cout << "\nThe TurkeyAdapter says...\n";
+    turkeyAdapter->quack();
+    turkeyAdapter->fly();
+
+    delete duck;
+    delete turkey;
+    delete turkeyAdapter;
+
     return 0;
 }
